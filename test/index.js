@@ -40,3 +40,8 @@ test('advanced mode', function (t) {
   t.deepEqual(detect.find(src, { requires: false }).expressions, [])
   t.end()
 })
+
+test('empty file', function (t) {
+  t.deepEqual(detect(''), [])
+  t.end()
+})

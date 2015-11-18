@@ -14,9 +14,8 @@ function detectImportRequire (src, opts) {
 
 module.exports.find = findImportRequire
 function findImportRequire (src, opts) {
-  if (!src) throw new TypeError('must specify a src option')
   opts = opts || {}
-  src = src.toString()
+  src = (src || '').toString()
 
   var imports = defined(opts.imports, true)
   var requires = defined(opts.requires, true)
