@@ -1,6 +1,6 @@
 # detect-import-require
 
-[![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
+[![stable](http://badges.github.io/stability-badges/dist/stable.svg)](http://github.com/badges/stability-badges)
 
 This is like [detective](https://www.npmjs.com/package/detective), but with a narrow focus and thin API, specifically aimed at supporting either `import` and/or `require` statements, and not much more.
 
