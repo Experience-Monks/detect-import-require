@@ -16,17 +16,17 @@ module.exports.find = findImportRequire
 function findImportRequire (src, opts) {
   if (!src) throw new TypeError('must specify a src option')
   opts = opts || {}
-  src = str.toString()
-  
+  src = src.toString()
+
   var imports = defined(opts.imports, true)
   var requires = defined(opts.requires, true)
-  
+
   var results = {
     strings: [],
     expressions: [],
     nodes: []
   }
-  
+
   // quick regex test before we parse entire AST
   var regex = regexBoth
   if (imports && !requires) regex = regexImport
@@ -34,7 +34,7 @@ function findImportRequire (src, opts) {
   if (!regex.test(src)) {
     return results
   }
-  
+
   var ast = acorn.parse(src, {
     ecmaVersion: 6,
     sourceType: 'module',
@@ -49,10 +49,10 @@ function findImportRequire (src, opts) {
       if (node.source.type === 'Literal') {
         results.strings.push(node.source.value)
       }
-      results.nodes.push(node);
+      results.nodes.push(node)
     }
   }
-  
+
   if (requires) {
     callExpression = function (node) {
       if (!isRequire(node)) return
@@ -63,7 +63,7 @@ function findImportRequire (src, opts) {
           results.expressions.push(escodegen.generate(node.arguments[0]))
         }
       }
-      results.nodes.push(node);
+      results.nodes.push(node)
     }
   }
 
@@ -76,6 +76,6 @@ function findImportRequire (src, opts) {
 }
 
 function isRequire (node) {
-  return node.callee.type === 'Identifier'
-    && node.callee.name === 'require'
+  return node.callee.type === 'Identifier' &&
+    node.callee.name === 'require'
 }

@@ -12,14 +12,13 @@ test('like the detective module, but for CommonJS + imports', function (t) {
     './foo', './blah', 'lodash', 'defaults',
     'side-effects', 'b'
   ])
-  
+
   t.deepEqual(detect(src, { imports: false }), [
     'path', 'object-assign', 'object-assign', 'b'
   ])
-  
-  t.deepEqual(detect(src, { imports: false, requires: false }), [
-  ])
-  
+
+  t.deepEqual(detect(src, { imports: false, requires: false }), [])
+
   t.deepEqual(detect(src, { imports: true, requires: false }), [
     './foo', './blah', 'lodash', 'defaults', 'side-effects'
   ])
@@ -31,13 +30,13 @@ test('advanced mode', function (t) {
     "__dirname + '/file.js'",
     "path.join(__dirname, '/file.js')"
   ])
-  
+
   t.deepEqual(detect.find(src).strings, [
     'path', 'object-assign', 'object-assign',
     './foo', './blah', 'lodash', 'defaults',
     'side-effects', 'b'
   ])
-  
+
   t.deepEqual(detect.find(src, { requires: false }).expressions, [])
   t.end()
 })
