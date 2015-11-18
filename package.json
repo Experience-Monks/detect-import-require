@@ -1,0 +1,51 @@
+{
+  "name": "detect-import-require",
+  "version": "1.0.0",
+  "description": "like the detective module, but for CommonJS + imports",
+  "main": "index.js",
+  "license": "MIT",
+  "author": {
+    "name": "Matt DesLauriers",
+    "email": "dave.des@gmail.com",
+    "url": "https://github.com/mattdesl"
+  },
+  "dependencies": {
+    "acorn": "^2.6.4",
+    "defined": "^1.0.0",
+    "escodegen": "^1.7.0",
+    "object-assign": "^4.0.1"
+  },
+  "devDependencies": {
+    "faucet": "0.0.1",
+    "standard": "^5.4.1",
+    "tape": "^4.2.2"
+  },
+  "scripts": {
+    "test": "standard && node test/index.js | faucet"
+  },
+  "keywords": [
+    "import",
+    "cjs",
+    "common",
+    "js",
+    "commonjs",
+    "imports",
+    "require",
+    "requires",
+    "detective",
+    "node",
+    "ast",
+    "walk",
+    "find",
+    "module",
+    "modules"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Jam3/detect-import-require.git"
+  },
+  "homepage": "https://github.com/Jam3/detect-import-require",
+  "bugs": {
+    "url": "https://github.com/Jam3/detect-import-require/issues"
+  }
+}
