@@ -1,6 +1,6 @@
 {
   "name": "detect-import-require",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "like the detective module, but for CommonJS + imports",
   "main": "index.js",
   "license": "MIT",
