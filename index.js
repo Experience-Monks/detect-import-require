@@ -1,4 +1,5 @@
 var acorn = require('acorn')
+require('acorn-es7-plugin')(acorn)
 var walk = require('acorn/dist/walk')
 var escodegen = require('escodegen')
 var defined = require('defined')
@@ -34,13 +35,19 @@ function findImportRequire (src, opts) {
     return results
   }
 
-  var ast = acorn.parse(src, {
+  var acornOptions = {
     ecmaVersion: 6,
     sourceType: 'module',
     allowReserved: true,
     allowReturnOutsideFunction: true,
     allowHashBang: true
-  })
+  };
+  if(opts.acornOptions) {
+    Object.keys(opts.acornOptions).forEach(function(key) {
+      acornOptions[key] = opts.acornOptions[key]
+    })
+  }
+  var ast = acorn.parse(src, acornOptions)
 
   var importDeclaration, callExpression
   if (imports) {
