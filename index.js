@@ -1,5 +1,4 @@
 var acorn = require('acorn')
-require('acorn-es7-plugin')(acorn)
 var walk = require('acorn/dist/walk')
 var escodegen = require('escodegen')
 var defined = require('defined')
@@ -11,6 +10,18 @@ var regexBoth = /\b(import|require)\b/
 module.exports = detectImportRequire
 function detectImportRequire (src, opts) {
   return findImportRequire(src, opts).strings
+}
+
+module.exports.applyAcornPlugins = applyAcornPlugins;
+function applyAcornPlugins(fn) {
+  acorn = fn(acorn)
+}
+
+module.exports.addAcornWalkBaseElementTypes = addAcornWalkBaseElementTypes
+function addAcornWalkBaseElementTypes(types) {
+  types.forEach(function(type) {
+    walk.base[type] = walk.base[type] || function() {};
+  })
 }
 
 module.exports.find = findImportRequire
