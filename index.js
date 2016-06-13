@@ -17,14 +17,13 @@ module.exports.find = findImportRequire
 function findImportRequire (src, opts) {
   opts = opts || {}
 
-  // allow buffer from fs APIs
+  // allow Node Buffer
   if (isBuffer(src)) {
     src = src.toString()
   }
 
-  // allow string, buffer or acorn AST
   if (typeof src !== 'string' && !src) {
-    throw new Error('src option must be a string or AST')
+    throw new Error('src option must be a string, Buffer or AST')
   }
 
   var imports = defined(opts.imports, true)
