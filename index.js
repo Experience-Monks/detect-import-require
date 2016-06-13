@@ -12,6 +12,18 @@ function detectImportRequire (src, opts) {
   return findImportRequire(src, opts).strings
 }
 
+module.exports.applyAcornPlugins = applyAcornPlugins;
+function applyAcornPlugins(fn) {
+  acorn = fn(acorn)
+}
+
+module.exports.addAcornWalkBaseElementTypes = addAcornWalkBaseElementTypes
+function addAcornWalkBaseElementTypes(types) {
+  types.forEach(function(type) {
+    walk.base[type] = walk.base[type] || function() {};
+  })
+}
+
 module.exports.find = findImportRequire
 function findImportRequire (src, opts) {
   opts = opts || {}
@@ -34,13 +46,19 @@ function findImportRequire (src, opts) {
     return results
   }
 
-  var ast = acorn.parse(src, {
+  var acornOptions = {
     ecmaVersion: 6,
     sourceType: 'module',
     allowReserved: true,
     allowReturnOutsideFunction: true,
     allowHashBang: true
-  })
+  };
+  if(opts.acornOptions) {
+    Object.keys(opts.acornOptions).forEach(function(key) {
+      acornOptions[key] = opts.acornOptions[key]
+    })
+  }
+  var ast = acorn.parse(src, acornOptions)
 
   var importDeclaration, callExpression
   if (imports) {
