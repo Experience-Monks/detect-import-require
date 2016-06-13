@@ -45,3 +45,32 @@ test('empty file', function (t) {
   t.deepEqual(detect(''), [])
   t.end()
 })
+
+test('supports Buffer type', function (t) {
+  var buf = fs.readFileSync(filename)
+  t.deepEqual(detect(buf), [
+    'path', 'object-assign', 'object-assign',
+    './foo', './blah', 'lodash', 'defaults',
+    'side-effects', 'b'
+  ])
+  t.end()
+})
+
+test('supports custom AST input', function (t) {
+  var jsx = "import 'foo'; ReactDOM.render(<h1>Hello World</h1>, document.getElementById('root'));"
+  var acorn = require('acorn-jsx/inject')(require('acorn'))
+  var ast = acorn.parse(jsx, {
+    ecmaVersion: 6,
+    sourceType: 'module',
+    allowReserved: true,
+    allowReturnOutsideFunction: true,
+    allowHashBang: true,
+    plugins: {
+      jsx: true
+    }
+  })
+  t.deepEqual(detect(ast), [
+    'foo'
+  ])
+  t.end()
+})

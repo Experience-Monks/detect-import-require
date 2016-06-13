@@ -1,7 +1,8 @@
 var acorn = require('acorn')
-var walk = require('acorn/dist/walk')
 var escodegen = require('escodegen')
 var defined = require('defined')
+var isBuffer = require('is-buffer')
+var types = require('ast-types')
 
 var regexRequire = /\brequire\b/
 var regexImport = /\bimport\b/
@@ -15,7 +16,16 @@ function detectImportRequire (src, opts) {
 module.exports.find = findImportRequire
 function findImportRequire (src, opts) {
   opts = opts || {}
-  src = (src || '').toString()
+
+  // allow buffer from fs APIs
+  if (isBuffer(src)) {
+    src = src.toString()
+  }
+
+  // allow string, buffer or acorn AST
+  if (typeof src !== 'string' && !src) {
+    throw new Error('src option must be a string or AST')
+  }
 
   var imports = defined(opts.imports, true)
   var requires = defined(opts.requires, true)
@@ -26,35 +36,46 @@ function findImportRequire (src, opts) {
     nodes: []
   }
 
-  // quick regex test before we parse entire AST
-  var regex = regexBoth
-  if (imports && !requires) regex = regexImport
-  else if (requires && !imports) regex = regexRequire
-  if (!regex.test(src)) {
-    return results
-  }
+  var ast
+  if (typeof src === 'string') {
+    // quick regex test before we parse entire AST
+    src = (src || '')
+    var regex = regexBoth
+    if (imports && !requires) regex = regexImport
+    else if (requires && !imports) regex = regexRequire
+    if (!regex.test(src)) {
+      return results
+    }
 
-  var ast = acorn.parse(src, {
-    ecmaVersion: 6,
-    sourceType: 'module',
-    allowReserved: true,
-    allowReturnOutsideFunction: true,
-    allowHashBang: true
-  })
+    // now parse
+    ast = acorn.parse(src, {
+      ecmaVersion: 6,
+      sourceType: 'module',
+      allowReserved: true,
+      allowReturnOutsideFunction: true,
+      allowHashBang: true
+    })
+  } else {
+    // assume ast is given
+    ast = src
+  }
 
   var importDeclaration, callExpression
   if (imports) {
-    importDeclaration = function (node) {
+    importDeclaration = function (path) {
+      var node = path.node
       if (node.source.type === 'Literal') {
         results.strings.push(node.source.value)
       }
       results.nodes.push(node)
+      this.traverse(path)
     }
   }
 
   if (requires) {
-    callExpression = function (node) {
-      if (!isRequire(node)) return
+    callExpression = function (path) {
+      var node = path.node
+      if (!isRequire(node)) return false
       if (node.arguments.length) {
         if (node.arguments[0].type === 'Literal') {
           results.strings.push(node.arguments[0].value)
@@ -63,12 +84,13 @@ function findImportRequire (src, opts) {
         }
       }
       results.nodes.push(node)
+      this.traverse(path)
     }
   }
 
-  walk.simple(ast, {
-    ImportDeclaration: importDeclaration,
-    CallExpression: callExpression
+  types.visit(ast, {
+    visitImportDeclaration: importDeclaration,
+    visitCallExpression: callExpression
   })
 
   return results
